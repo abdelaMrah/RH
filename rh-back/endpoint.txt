@@ -1,0 +1,126 @@
+1. Employees (/employees)
+CRUD de base pour gérer les employés
+GET /employees : Récupérer tous les employés
+POST /employees : Créer un nouvel employé
+GET /employees/{id} : Récupérer un employé par son ID
+PUT /employees/{id} : Mettre à jour un employé par son ID
+DELETE /employees/{id} : Supprimer un employé par son ID
+Points supplémentaires pour la gestion avancée
+GET /employees/{id}/documents : Récupérer tous les documents associés à un employé
+GET /employees/{id}/absences : Récupérer toutes les absences d'un employé
+GET /employees/{id}/leaves : Récupérer toutes les congés d'un employé
+GET /employees/{id}/projects : Récupérer les projets assignés à un employé
+GET /employees/{id}/reviews : Récupérer les évaluations de performance d'un employé
+GET /employees/{id}/notifications : Récupérer les notifications pour un employé
+GET /employees/{id}/feedback : Récupérer les feedbacks d'un employé
+GET /employees/{id}/certifications : Récupérer les certifications d'un employé
+POST /employees/{id}/certifications : Assigner une certification à un employé
+
+2. Departments (/departments)
+Gestion des départements
+GET /departments : Récupérer tous les départements
+POST /departments : Créer un nouveau département
+GET /departments/{id} : Récupérer un département par ID
+PUT /departments/{id} : Mettre à jour un département par ID
+DELETE /departments/{id} : Supprimer un département par ID
+
+3. Documents (/documents)
+Gestion des documents avec flux de travail
+GET /documents : Récupérer tous les documents
+POST /documents : Créer un nouveau document
+GET /documents/{id} : Récupérer un document par ID
+PUT /documents/{id} : Mettre à jour un document par ID
+DELETE /documents/{id} : Supprimer un document par ID
+Actions spécifiques aux documents
+POST /documents/{id}/signatures : Ajouter une signature au document
+GET /documents/{id}/versions : Récupérer toutes les versions d'un document
+POST /documents/{id}/versions : Créer une nouvelle version d’un document
+POST /documents/{id}/comments : Ajouter un commentaire au document
+GET /documents/{id}/tags : Récupérer les tags d’un document
+POST /documents/{id}/tags : Assigner des tags à un document
+
+4. Document Workflow (/workflows)
+Gestion des flux de travail pour les documents
+GET /workflows : Récupérer tous les workflows
+POST /workflows : Créer un nouveau workflow
+GET /workflows/{id} : Récupérer un workflow par ID
+PUT /workflows/{id} : Mettre à jour un workflow par ID
+DELETE /workflows/{id} : Supprimer un workflow par ID
+Gestion des étapes de workflow
+GET /workflows/{id}/steps : Récupérer les étapes d’un workflow
+POST /workflows/{id}/steps : Ajouter une étape au workflow
+PUT /workflows/{id}/steps/{stepId} : Mettre à jour une étape de workflow
+DELETE /workflows/{id}/steps/{stepId} : Supprimer une étape de workflow
+
+5. Absences (/absences)
+Gestion des absences
+GET /absences : Récupérer toutes les absences
+POST /absences : Enregistrer une nouvelle absence
+GET /absences/{id} : Récupérer une absence par ID
+PUT /absences/{id} : Mettre à jour une absence par ID
+DELETE /absences/{id} : Supprimer une absence par ID
+
+6. Leaves (/leaves)
+Gestion des congés
+GET /leaves : Récupérer tous les congés
+POST /leaves : Créer un congé
+GET /leaves/{id} : Récupérer un congé par ID
+PUT /leaves/{id} : Mettre à jour un congé par ID
+DELETE /leaves/{id} : Supprimer un congé par ID
+
+7. Roles & Permissions (/roles, /permissions)
+Gestion des rôles
+GET /roles : Récupérer tous les rôles
+POST /roles : Créer un nouveau rôle
+GET /roles/{id} : Récupérer un rôle par ID
+PUT /roles/{id} : Mettre à jour un rôle par ID
+DELETE /roles/{id} : Supprimer un rôle par ID
+Gestion des permissions
+GET /permissions : Récupérer toutes les permissions
+POST /permissions : Créer une nouvelle permission
+GET /permissions/{id} : Récupérer une permission par ID
+PUT /permissions/{id} : Mettre à jour une permission par ID
+DELETE /permissions/{id} : Supprimer une permission par ID
+
+8. Training & Certification (/trainings, /certifications)
+Gestion des formations
+GET /trainings : Récupérer toutes les formations
+POST /trainings : Créer une nouvelle formation
+GET /trainings/{id} : Récupérer une formation par ID
+PUT /trainings/{id} : Mettre à jour une formation par ID
+DELETE /trainings/{id} : Supprimer une formation par ID
+Gestion des certifications
+GET /certifications : Récupérer toutes les certifications
+POST /certifications : Créer une nouvelle certification
+GET /certifications/{id} : Récupérer une certification par ID
+PUT /certifications/{id} : Mettre à jour une certification par ID
+DELETE /certifications/{id} : Supprimer une certification par ID
+
+9. Notifications (/notifications)
+Gestion des notifications
+GET /notifications : Récupérer toutes les notifications
+POST /notifications : Créer une nouvelle notification
+GET /notifications/{id} : Récupérer une notification par ID
+PUT /notifications/{id} : Mettre à jour une notification par ID
+DELETE /notifications/{id} : Supprimer une notification par ID
+
+10. Projects (/projects)
+Gestion des projets
+GET /projects : Récupérer tous les projets
+POST /projects : Créer un nouveau projet
+GET /projects/{id} : Récupérer un projet par ID
+PUT /projects/{id} : Mettre à jour un projet par ID
+DELETE /projects/{id} : Supprimer un projet par ID
+
+11. File Storage (/file-storage)
+Gestion des fichiers
+GET /file-storage : Récupérer tous les fichiers
+POST /file-storage : Ajouter un nouveau fichier
+GET /file-storage/{id} : Récupérer un fichier par ID
+DELETE /file-storage/{id} : Supprimer un fichier par ID
+
+12. Feedback (/feedback)
+Gestion des retours
+GET /feedback : Récupérer tous les feedbacks
+POST /feedback : Créer un feedback
+GET /feedback/{id} : Récupérer un feedback par ID

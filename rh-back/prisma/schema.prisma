@@ -1,0 +1,391 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Employee {
+  id          Int         @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String       @unique
+  phoneNumber String?
+  position    String?
+  department  Department?  @relation(fields: [departmentId], references: [id])
+  departmentId Int?
+  hireDate    DateTime
+  status      EmployeeStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Documents   Document[]
+  Absences    Absence[]
+  Leaves      Leave[]
+  Comments    DocumentComment[]
+  version     DocumentVersion[]
+  Signatures  DocumentSignature[]
+  AuditLogs   DocumentAuditLog[]
+  employeeRole  EmployeeRole[]
+  employeeTraining EmployeeTraining[]
+  employeeCertification EmployeeCertification[]
+  notification Notification[]
+  performanceReview PerformanceReview[]
+  projectAssignment ProjectAssignment[]
+  feedback  Feedback[]
+
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Department {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  Employees   Employee[]
+  Documents   Document[]
+}
+
+model DocumentType {
+  id              Int         @id @default(autoincrement())
+  name            String
+  description     String?
+  retentionPeriod Int?        // Durée de rétention en mois
+  Documents       Document[]
+}
+
+model Document {
+  id              Int         @id @default(autoincrement())
+  employee        Employee?   @relation(fields: [employeeId], references: [id])
+  employeeId      Int?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  departmentId    Int?
+  documentType    DocumentType @relation(fields: [documentTypeId], references: [id])
+  documentTypeId  Int
+  uploadDate      DateTime    @default(now())
+  version         Int         @default(1)
+  filePath        String
+  metadata        Json?
+  status          DocumentStatus @default(DRAFT)
+  expiryDate      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  AccessControls  DocumentAccess[]
+  Versions        DocumentVersion[]
+  Comments        DocumentComment[]
+  Tags            DocumentTagAssignment[]
+  Signatures      DocumentSignature[]
+  AuditLogs       DocumentAuditLog[]
+  notification    Notification[]
+  fileStorage     FileStorage[]
+  feedback        Feedback[]
+}
+    
+
+enum DocumentStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ARCHIVED
+}
+
+model DocumentAccess {
+  id           Int      @id @default(autoincrement())
+  document     Document  @relation(fields: [documentId], references: [id])
+  documentId   Int
+  userId       Int
+  roleId       Int
+  accessLevel  AccessLevel
+}
+
+enum AccessLevel {
+  READ
+  WRITE
+  DELETE
+}
+
+model DocumentVersion {
+  id         Int      @id @default(autoincrement())
+  document   Document  @relation(fields: [documentId], references: [id])
+  documentId Int
+  version    Int
+  filePath   String
+  updatedBy  Employee? @relation(fields: [updatedById], references: [id])
+  updatedById Int?
+  updatedAt  DateTime  @default(now())
+}
+
+model Workflow {
+  id         Int       @id @default(autoincrement())
+  name       String
+  description String?
+  Steps      WorkflowStep[]
+  notification  Notification[]
+}
+
+model WorkflowStep {
+  id           Int       @id @default(autoincrement())
+  workflow     Workflow   @relation(fields: [workflowId], references: [id])
+  workflowId   Int
+  stepOrder    Int
+  actionRequired String
+  assignedRoleId Int
+  dueDate      DateTime?
+}
+
+model DocumentSignature {
+  id           Int        @id @default(autoincrement())
+  document     Document    @relation(fields: [documentId], references: [id])
+  documentId   Int
+  signatory    Employee    @relation(fields: [signatoryId], references: [id])
+  signatoryId  Int
+  status       SignatureStatus @default(SENT)
+  signedAt     DateTime?
+}
+
+enum SignatureStatus {
+  SENT
+  VIEWED
+  SIGNED
+}
+
+model DocumentComment {
+  id           Int        @id @default(autoincrement())
+  document     Document    @relation(fields: [documentId], references: [id])
+  documentId   Int
+  user         Employee    @relation(fields: [userId], references: [id])
+  userId       Int
+  comment      String
+  createdAt    DateTime    @default(now())
+}
+
+model DocumentAuditLog {
+  id           Int       @id @default(autoincrement())
+  document     Document   @relation(fields: [documentId], references: [id])
+  documentId   Int
+  action       String
+  performedBy  Employee   @relation(fields: [performedById], references: [id])
+  performedById Int
+  performedAt  DateTime   @default(now())
+  ipAddress    String
+}
+
+model DocumentTag {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  Assignments  DocumentTagAssignment[]
+}
+
+model DocumentTagAssignment {
+  id           Int      @id @default(autoincrement())
+  document     Document @relation(fields: [documentId], references: [id])
+  documentId   Int
+  tag          DocumentTag @relation(fields: [tagId], references: [id])
+  tagId        Int
+}
+
+model LeaveType {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  maxDays      Int
+  Leaves       Leave[]
+}
+
+model Leave {
+  id           Int      @id @default(autoincrement())
+  employee     Employee @relation(fields: [employeeId], references: [id])
+  employeeId   Int
+  leaveType    LeaveType @relation(fields: [leaveTypeId], references: [id])
+  leaveTypeId  Int
+  startDate    DateTime
+  endDate      DateTime
+  status       LeaveStatus @default(PENDING)
+  reason       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+model AbsenceType {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  Absences     Absence[]
+}
+
+model Absence {
+  id           Int      @id @default(autoincrement())
+  employee     Employee @relation(fields: [employeeId], references: [id])
+  employeeId   Int
+  absenceType  AbsenceType @relation(fields: [absenceTypeId], references: [id])
+  absenceTypeId Int
+  date         DateTime
+  status       AbsenceStatus @default(UNJUSTIFIED)
+  reason       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum AbsenceStatus {
+  JUSTIFIED
+  UNJUSTIFIED
+}
+
+
+// Ajout du modèle de Role et Permission
+model Role {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  employees   EmployeeRole[]
+  RolePermission RolePermission[]
+}
+model RolePermission {
+  id                    Int                     @id @default(autoincrement())
+  role                  Role                    @relation(fields: [roleId], references: [id])
+  roleId                Int
+  permission            Permission              @relation(fields: [permissionId], references: [id])
+  permissionId          Int
+}
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  RolePermission RolePermission[]
+}
+
+model EmployeeRole {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  roleId     Int
+  role       Role     @relation(fields: [roleId], references: [id])
+  assignedAt DateTime @default(now())
+}
+
+// Modèles pour les formations et certifications
+model Training {
+  id           Int         @id @default(autoincrement())
+  title        String
+  description  String?
+  date         DateTime
+  certifications Certification[]
+  employees    EmployeeTraining[]
+}
+
+model Certification {
+  id           Int         @id @default(autoincrement())
+  name         String
+  issuedBy     String
+  issueDate    DateTime
+  expiryDate   DateTime?
+  training     Training?   @relation(fields: [trainingId], references: [id])
+  trainingId   Int?
+  employees    EmployeeCertification[]
+}
+
+// Modèles intermédiaires pour relier Employee avec Training et Certification
+model EmployeeTraining {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  training   Training @relation(fields: [trainingId], references: [id])
+  trainingId Int
+  completedAt DateTime?
+}
+
+model EmployeeCertification {
+  id             Int         @id @default(autoincrement())
+  employee       Employee    @relation(fields: [employeeId], references: [id])
+  employeeId     Int
+  certification  Certification @relation(fields: [certificationId], references: [id])
+  certificationId Int
+  obtainedAt     DateTime
+  expiresAt      DateTime?
+}
+
+// Modèle de Notification
+model Notification {
+  id         Int         @id @default(autoincrement())
+  message    String
+  createdAt  DateTime    @default(now())
+  read       Boolean     @default(false)
+  employee   Employee?   @relation(fields: [employeeId], references: [id])
+  employeeId Int?
+  document   Document?   @relation(fields: [documentId], references: [id])
+  documentId Int?
+  workflow   Workflow?   @relation(fields: [workflowId], references: [id])
+  workflowId Int?
+}
+
+// Modèle de Performance Review
+model PerformanceReview {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  reviewDate DateTime @default(now())
+  comments   String?
+  score      Int
+}
+
+// Modèle de Projet et d'Assignment de projet
+model Project {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  assignments ProjectAssignment[]
+}
+
+model ProjectAssignment {
+  id          Int      @id @default(autoincrement())
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   Int
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  employeeId  Int
+  role        String
+  assignedAt  DateTime @default(now())
+}
+
+// Modèle de gestion de stockage de fichiers
+model FileStorage {
+  id         Int      @id @default(autoincrement())
+  filePath   String
+  fileType   String
+  createdAt  DateTime @default(now())
+  document   Document? @relation(fields: [documentId], references: [id])
+  documentId Int?
+}
+
+// Modèle de jours fériés
+model Holiday {
+  id         Int      @id @default(autoincrement())
+  name       String
+  date       DateTime
+  country    String?
+}
+
+// Modèle de Feedback
+model Feedback {
+  id           Int      @id @default(autoincrement())
+  employee     Employee @relation(fields: [employeeId], references: [id])
+  employeeId   Int
+  document     Document? @relation(fields: [documentId], references: [id])
+  documentId   Int?
+  feedbackText String
+  createdAt    DateTime @default(now())
+}
