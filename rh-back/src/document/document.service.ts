@@ -110,12 +110,15 @@ export class DocumentService {
 
   async getTags(id:number){
     try {
+      
       const tags = await this.prisma.document.findUnique({where:{id}}).Tags();
     return tags
     } catch (error) {
       throw error
     }
   }
+
+
   
 
   async addTagToDocument({documentId,name}:{documentId:number,name:string}){
